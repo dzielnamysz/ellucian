@@ -1,0 +1,77 @@
+from selenium.webdriver.firefox.options import Options
+import time
+from tkinter import *
+import numpy
+from pandas import read_excel, DataFrame
+import pandas as pd
+import pyautogui as p
+import pyperclip, webbrowser
+import os
+import shutil
+import win32com.client as win32
+import datetime
+from selenium import webdriver
+import configparser
+from selenium.webdriver.common.keys import Keys
+
+AioCP = configparser.ConfigParser()
+AioCP.read(r"C:\Users\t.johnson\Desktop\python\exe\Releases\TC EXE\TC EXE v2\build\Tyler's App\Configuration.txt")
+Cuser = AioCP.get('Colleague', 'username')
+Cpass = AioCP.get('Colleague', 'password')
+
+
+options = Options()
+options.add_argument("--headless")
+#b = webdriver.Firefox()
+b = webdriver.Firefox(firefox_options=options)
+b.get("https://ui.snhu.edu/ui/home/index.html")
+time.sleep(2)
+username = b.find_element_by_css_selector("#UserID")
+print('found username field')
+username.send_keys(Cuser)
+password = b.find_element_by_css_selector("#UserPassword")
+print('found password field')
+password.send_keys(Cpass)
+b.find_element_by_css_selector("#btnLogin").click()
+print('logging in')
+time.sleep(6)
+okay_pop = b.find_element_by_css_selector("#popup_lookup_button_0")
+
+def try_pop_up():
+    try:
+        if okay_pop:
+            okay_pop.click()
+        else:
+            print('Pop up is not detected')
+    except:
+        print('Next step')
+
+
+try_pop_up()
+print('checking for a second pop up')
+time.sleep(1.4)
+try_pop_up()
+
+form = b.find_element_by_css_selector("#form-search")
+form.send_keys('spro')
+form.send_keys(Keys.ENTER)
+time.sleep(2)
+student_lookup = b.find_element_by_css_selector("#popup-lookup")
+student_lookup.send_keys('1234567')
+print('searching for student')
+student_lookup.send_keys(Keys.ENTER)
+time.sleep(3)
+heading_element = b.find_element_by_css_selector("#PST-ADVISEMENT_1")  # advisor
+heading_element1 = b.find_element_by_xpath('//*[@id="rightTitleField"]')  # student ID
+print('looking for element')
+try:
+    if heading_element:
+        print(heading_element.get_property('value'))  # advisor
+        print(heading_element1.get_property('textContent').strip())  # student ID
+        print('did it work?')
+        b.quit()
+except:
+    print('no go chief')
+    b.quit()
+b.quit()
+print('b.quit')
